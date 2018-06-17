@@ -77,6 +77,8 @@ val test8_4 = all_same_color [(Hearts, Ace)] = true
 
 val test8_5 = all_same_color [(Hearts, Ace), (Diamonds, Num 5), (Diamonds, Num 10), (Spades, Num 7)] = false
 
+val test8_6 = all_same_color [(Clubs,Ace),(Spades,Ace),(Diamonds,Ace)] = false
+
 val test9_1 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)] = 4
 
 val test9_2 = sum_cards [] = 0

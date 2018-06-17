@@ -128,7 +128,9 @@ fun all_same_color cl =
   case cl of
     [] => true
   | x::[] => true
-  | x::y::xs => card_color x = card_color y andalso all_same_color(xs)
+  | x::y::xs => card_color x = card_color y andalso all_same_color(y::xs)
+
+  (*[(Clubs,Ace),(Spades,Ace),(Diamonds,Ace)]*)
 
 
 (* Write a function sum_cards, which takes a list of cards and returns the sum of their values. Use a locally
