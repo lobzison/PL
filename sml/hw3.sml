@@ -44,13 +44,17 @@ val only_capitals = List.filter (fn x => Char.isUpper(String.sub(x,0)))
 list. If the list is empty, return "". In the case of a tie, return the string closest to the beginning of the
 list. Use foldl, String.size, and no recursion (other than the implementation of foldl is recursive).*)
 
-val longest_string1 = foldl (fn (x, acc) => if String.size(x) > String.size(acc) then x else acc) ""
+val longest_string1 = foldl (fn (x, acc) => if String.size(x) > String.size(acc) 
+											then x
+											else acc) ""
 
 (*3. Write a function longest_string2 that is exactly like longest_string1 except in the case of ties
 it returns the string closest to the end of the list. Your solution should be almost an exact copy of
 longest_string1. Still use foldl and String.size.*)
 
-val longest_string2 = foldl (fn (x, acc) => if String.size(x) >= String.size(acc) then x else acc) ""
+val longest_string2 = foldl (fn (x, acc) => if String.size(x) >= String.size(acc) 
+											then x
+											else acc) ""
 
 (*4. Write functions longest_string_helper, longest_string3, and longest_string4 such that:
 • longest_string3 has the same behavior as longest_string1 and longest_string4 has the
@@ -64,7 +68,9 @@ behavior as longest_string1.
 • longest_string3 and longest_string4 are defined with val-bindings and partial applications
 of longest_string_helper.*)
 
-fun longest_string_helper f xs = foldl (fn (x, acc) => if f(String.size(x), String.size(acc)) then x else acc) "" xs
+fun longest_string_helper f xs = foldl (fn (x, acc) => if f(String.size(x), String.size(acc))
+													   then x
+													   else acc) "" xs
 
 val longest_string3 = longest_string_helper (fn (x,y) => x > y)
 val longest_string4 = longest_string_helper (fn (x,y) => x >= y)
