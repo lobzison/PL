@@ -18,8 +18,7 @@
       (error "list-nth-mod: negative number")
       (if (null? xs)
           (error "list-nth-mod: empty list")
-          (car (list-tail xs (remainder n (length xs))))
-          )))
+          (car (list-tail xs (remainder n (length xs)))))))
 
 (define (stream-for-n-steps s n)
   (if (< n 1)
@@ -66,10 +65,10 @@
            [f (lambda (x)
                 (let ([ans [vector-assoc x memo]])
                   (if ans
-                      (cdr ans)
+                      ans
                       (let ([new-ans (assoc x xs)])
                         (begin
-                          (vector-set! memo idx (cons x new-ans))
+                          (vector-set! memo idx new-ans)
                           (set! idx (modulo (+ idx 1) n))
                           new-ans)))
                   ))])
