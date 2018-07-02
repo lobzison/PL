@@ -18,13 +18,27 @@
    "Sample tests for Assignment 4"
    
    ; sequence test
-   (check-equal? (sequence 0 5 1) (list 0 1 2 3 4 5) "Sequence test")
+   (check-equal? (sequence 0 5 1) (list 0 1 2 3 4 5) "Sequence test1")
+
+   (check-equal? (sequence 3 11 2) (list 3 5 7 9 11) "Sequence test2")
+
+   (check-equal? (sequence 3 8 3) (list 3 6) "Sequence test3")
+
+   (check-equal? (sequence 3 2 1) null "Sequence test4")
 
    ; string-append-map test
    (check-equal? (string-append-map 
                   (list "dan" "dog" "curry" "dog2") 
-                  ".jpg") '("dan.jpg" "dog.jpg" "curry.jpg" "dog2.jpg") "string-append-map test")
+                  ".jpg") '("dan.jpg" "dog.jpg" "curry.jpg" "dog2.jpg") "string-append-map test1")
+
+   (check-equal? (string-append-map 
+                  (list "d" "") 
+                  ".") '("d." ".") "string-append-map test2")
    
+   (check-equal? (string-append-map 
+                  (list "" "a") 
+                  "") '("" "a") "string-append-map test3")
+
    ; list-nth-mod test
    (check-equal? (list-nth-mod (list 0 1 2 3 4) 2) 2 "list-nth-mod test")
    
@@ -46,12 +60,14 @@
    
    ; vector-assoc test
    (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
+
+   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) #f (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
    
    ; cached-assoc tests
    (check-equal? ((cached-assoc (list (cons 1 2) (cons 3 4)) 3) 3) (cons 3 4) "cached-assoc test")
    
    ; while-less test
-   (check-equal? (while-less 7 do (begin (set! a (+ a 1)) a)) #t "while-less test")
+   ;(check-equal? (while-less 7 do (begin (set! a (+ a 1)) a)) #t "while-less test")
    
    ))
 
