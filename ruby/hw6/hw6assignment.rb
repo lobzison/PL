@@ -5,21 +5,19 @@
 
 class MyPiece < Piece
   # The constant All_My_Pieces should be declared here
+  All_My_Pieces = [[[[0, 0], [1, 0], [0, 1], [1, 1]]],  # square (only needs one)
+               rotations([[0, 0], [-1, 0], [1, 0], [0, -1]]), # T
+               [[[0, 0], [-1, 0], [1, 0], [2, 0]], # long (only needs two)
+               [[0, 0], [0, -1], [0, 1], [0, 2]]],
+               rotations([[0, 0], [0, -1], [0, 1], [1, 1]]), # L
+               rotations([[0, 0], [0, -1], [0, 1], [-1, 1]]), # inverted L
+               rotations([[0, 0], [-1, 0], [0, -1], [1, -1]]), # S
+               rotations([[0, 0], [1, 0], [0, -1], [-1, -1]]),# Z
+               [[[0, 0], [-1, 0], [1, 0], [2, 0], [-2, 0]], # extralong (only needs two)
+               [[0, 0], [0, -1], [0, 1], [0, 2], [0, -2]]],
+               rotations([[0, 0], [1, 0], [-1, 0], [0, -1], [-1, -1]]), # first new
+               rotations([[0, 0], [1, 0], [0, 1]])] # last new
 
-  All_Pieces = [
-    #   [[[0, 0], [1, 0], [0, 1], [1, 1]]],  # square (only needs one)
-    #            rotations([[0, 0], [-1, 0], [1, 0], [0, -1]]), # T
-    #            [[[0, 0], [-1, 0], [1, 0], [2, 0]], # long (only needs two)
-    #            [[0, 0], [0, -1], [0, 1], [0, 2]]],
-    #            rotations([[0, 0], [0, -1], [0, 1], [1, 1]]), # L
-    #            rotations([[0, 0], [0, -1], [0, 1], [-1, 1]]), # inverted L
-    #            rotations([[0, 0], [-1, 0], [0, -1], [1, -1]]), # S
-    #            rotations([[0, 0], [1, 0], [0, -1], [-1, -1]]),# Z
-            #    [[[0, 0], [-1, 0], [1, 0], [2, 0], [-2, 0]], # extralong (only needs two)
-            #    [[0, 0], [0, -1], [0, 1], [0, 2], [0, -2]]],
-            #     rotations([[0, 0], [1, 0], [-1, 0], [0, -1], [-1, -1]]), # first new
-                 rotations([[0, 0],[0, 1], [-1, 0] ])
-            ] 
   def self.next_piece (board)
     MyPiece.new(All_Pieces.sample, board)
   end
@@ -27,9 +25,15 @@ end
 
 class MyBoard < Board
   # coud have used rotate_clockwise twice, but that would draw pice twice
+  
   def initialize(game)
     super
     @current_block = MyPiece.next_piece(self)
+    @cheating = false
+  end
+
+  def cheating
+    @cheating
   end
 
   def next_piece
@@ -43,6 +47,36 @@ class MyBoard < Board
     end
     draw
   end
+
+  def cheat
+    if not cheating and score >= 100
+      @score -= 100
+      @game.update_score
+      @cheating = true
+    end
+  end
+
+  def next_piece
+    if not cheating
+      super
+    else
+      @current_block = MyPiece.new([[[0, 0]]], self)
+      @current_pos = nil
+      @cheating = false
+    end
+  end
+
+  def store_current
+    locations = @current_block.current_rotation
+    displacement = @current_block.position
+    (0..locations.size-1).each{|index| 
+      current = locations[index];
+      @grid[current[1]+displacement[1]][current[0]+displacement[0]] = 
+      @current_pos[index]
+    }
+    remove_filled
+    @delay = [@delay - 2, 80].max
+  end 
 
 end
 
@@ -59,7 +93,7 @@ class MyTetris < Tetris
   def key_bindings
     super
     @root.bind('u', proc {@board.rotate_twice})
+    @root.bind('c', proc {@board.cheat})
   end
-
 end
 
