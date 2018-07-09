@@ -9,3 +9,6 @@ fun f(x,y) = x * y
 fun double x = f(x,2)
 
 fun triple x = f(3,x)
+
+val p1 = (7,9)
+val z3 = f1 p1
