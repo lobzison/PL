@@ -263,10 +263,63 @@ class LineSegment < GeometryValue
   def intersect other
     other.intersectLineSegment self # will be NoPoints but follow double-dispatch
   end
-  def intersectWithSegmentAsLineResult seg
+  def intersectWithSegmentAsLineResult seg # seg - seg, self - seg2
     if real_close(seg.x1, seg.x2)
       if seg.y1 < self.y1
-        a = 
+        a = seg
+        b = self
+      else
+        a = self
+        b = seg
+      end
+      if real_close(a.y2, b.y1)
+        Point.new(a.x2, a.y2) # just touching
+      else 
+        if a.y2 < b.y1 
+        NoPoints.new() # disjoint
+        else 
+          if a.y2 > b.y2
+            LineSegment.new(b.x1, b.y1, b.x2, b.y2) # b inside a 
+          else
+            LineSegment.new(b.x1, b.y1, a.x2, a.y2) # overlapping
+          end
+        end
+      end
+      else # the segments are on a (non-vertical) line
+        if seg.x1 < self.x1
+          a = seg
+          b = self
+        else
+          a = self
+          b = seg
+        end
+        if real_close(a.x2,b.x1)
+          Point.new(a.x2, a.y2) # just touching
+        else
+          if a.x2 < b.x1
+            NoPoints.new()
+          else
+            if a.x2 > b.x2
+              LineSegment.new(b.x1, b.y1, b.x2, b.y2) # b inside a
+            else
+              LineSegment.new(b.x1,b.y1,a.x2,a.y2) # overlapping
+            end
+          end
+        end
+      end
+
+		# 	if real_close(aXend,bXstart)
+		# 	then Point (aXend,aYend) (* just touching *)
+		# 	else if aXend < bXstart
+		# 	then NoPoints (* disjoint *)
+		# 	else if aXend > bXend
+		# 	then LineSegment(bXstart,bYstart,bXend,bYend) (* b inside a *)
+		# 	else LineSegment(bXstart,bYstart,aXend,aYend) (* overlapping *)
+		#     end	
+	  #   end	
+
+
+
     # let
 		# val (x1start,y1start,x1end,y1end) = seg
 		# val (x2start,y2start,x2end,y2end) = seg2
