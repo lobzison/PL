@@ -143,7 +143,7 @@ class Point < GeometryValue
   end
   def intersectLine line
     if real_close(y, line.m * x + line.b)
-      v1
+      self
     else NoPoints.new()
     end
   end
@@ -162,7 +162,7 @@ class Point < GeometryValue
   end
   private
   def inbetween(v, end1, end2)
-    ((en1 - GeometryExpression::Epsilon <= v) and (v <= end2 + GeometryExpression::Epsilon)) or ((end2 - GeometryExpression::Epsilon <= v) and (v <= end1 + GeometryExpression::Epsilon))
+    ((end1 - GeometryExpression::Epsilon <= v) and (v <= end2 + GeometryExpression::Epsilon)) or ((end2 - GeometryExpression::Epsilon <= v) and (v <= end1 + GeometryExpression::Epsilon))
   end
 end
 
@@ -261,8 +261,13 @@ class LineSegment < GeometryValue
     LineSegment.new(x1+dx,y1+dy,x2+dx,y2+dy)
   end
   def intersect other
-    other.intersectLineSegment self # will be NoPoints but follow double-dispatch
+    other.intersectLineSegment self
   end
+
+  def intersectLineSegment seg
+    self.intersectWithSegmentAsLineResult seg
+  end
+
   def intersectWithSegmentAsLineResult seg # seg - seg, self - seg2
     if real_close(seg.x1, seg.x2)
       if seg.y1 < self.y1
@@ -308,56 +313,6 @@ class LineSegment < GeometryValue
         end
       end
 
-		# 	if real_close(aXend,bXstart)
-		# 	then Point (aXend,aYend) (* just touching *)
-		# 	else if aXend < bXstart
-		# 	then NoPoints (* disjoint *)
-		# 	else if aXend > bXend
-		# 	then LineSegment(bXstart,bYstart,bXend,bYend) (* b inside a *)
-		# 	else LineSegment(bXstart,bYstart,aXend,aYend) (* overlapping *)
-		#     end	
-	  #   end	
-
-
-
-    # let
-		# val (x1start,y1start,x1end,y1end) = seg
-		# val (x2start,y2start,x2end,y2end) = seg2
-	  #   in
-		# if real_close(x1start,x1end)
-		# then (* the segments are on a vertical line *)
-		#     (* let segment a start at or below start of segment b *)
-		#     let 
-		# 	val ((aXstart,aYstart,aXend,aYend),
-		# 	     (bXstart,bYstart,bXend,bYend)) = if y1start < y2start
-		# 					      then (seg,seg2)
-		# 					      else (seg2,seg)
-		#     in
-		# 	if real_close(aYend,bYstart)
-		# 	then Point (aXend,aYend) (* just touching *)
-		# 	else if aYend < bYstart
-		# 	then NoPoints (* disjoint *)
-		# 	else if aYend > bYend
-		# 	then LineSegment(bXstart,bYstart,bXend,bYend) (* b inside a *)
-		# 	else LineSegment(bXstart,bYstart,aXend,aYend) (* overlapping *)
-		#     end
-		# else (* the segments are on a (non-vertical) line *)
-		#     (* let segment a start at or to the left of start of segment b *)
-		#     let 
-		# 	val ((aXstart,aYstart,aXend,aYend),
-		# 	     (bXstart,bYstart,bXend,bYend)) = if x1start < x2start
-		# 					      then (seg,seg2)
-		# 					      else (seg2,seg)
-		#     in
-		# 	if real_close(aXend,bXstart)
-		# 	then Point (aXend,aYend) (* just touching *)
-		# 	else if aXend < bXstart
-		# 	then NoPoints (* disjoint *)
-		# 	else if aXend > bXend
-		# 	then LineSegment(bXstart,bYstart,bXend,bYend) (* b inside a *)
-		# 	else LineSegment(bXstart,bYstart,aXend,aYend) (* overlapping *)
-		#     end	
-	  #   end			
   end
 end
 
@@ -371,6 +326,8 @@ class Intersect < GeometryExpression
     @e2 = e2
   end
   def preprocess_prog
+    @e1 = @e1.preprocess_prog
+    @e2 = @e2.preprocess_prog
     self
   end
   def eval_prog env # remember: do not change this method
@@ -390,12 +347,14 @@ class Let < GeometryExpression
     @e2 = e2
   end
   def preprocess_prog
+    @e1 = @e1.preprocess_prog
+    @e2 = @e2.preprocess_prog
     self
   end
   def eval_prog env
-    val = e1.eval_prog(env)
-    new_env = [@s, val] + env.copy
-    e2.eval_prog new_env
+    val = @e1.eval_prog(env)
+    new_env = [@s, val] + env.clone
+    @e2.eval_prog(new_env)
   end
 end
 
@@ -424,6 +383,7 @@ class Shift < GeometryExpression
     @e = e
   end
   def preprocess_prog
+    @e = @e.preprocess_prog
     self
   end
   def eval_prog env # remember: do not change this method
