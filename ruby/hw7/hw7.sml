@@ -84,7 +84,7 @@ fun intersect (v1,v2) =
 	      then v1 (* same line *)
 	      else  NoPoints) (* parallel lines do not intersect *)
 	else 
-	    let (* one-point intersection *)
+	    let(* one-point intersection *)
 		val x = (b2 - b1) / (m1 - m2)
 		val y = m1 * x + b1
 	    in
@@ -214,5 +214,8 @@ fun preprocess_prog e =
 								else if x1 < x2 orelse (real_close(x1,x2) andalso y1 < y2)
 								then LineSegment(x1,y1,x2,y2)
 								else LineSegment(x2,y2,x1,y1)
+    | Let(s,e1,e2) => Let(s, preprocess_prog e1, preprocess_prog e2)
+	| Intersect(e1,e2) => Intersect(preprocess_prog e1, preprocess_prog e2)
+	| Shift(d1,d2,e) => Shift(d1,d2,preprocess_prog e)
 	| _ => e
  
