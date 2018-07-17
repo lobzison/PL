@@ -353,7 +353,7 @@ class Let < GeometryExpression
   end
   def eval_prog env
     val = @e1.eval_prog(env)
-    new_env = [@s, val] + env.clone
+    new_env = env.clone.insert(0, [@s, val])
     @e2.eval_prog(new_env)
   end
 end
