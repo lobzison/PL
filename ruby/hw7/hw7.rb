@@ -281,13 +281,13 @@ class LineSegment < GeometryValue
   end
 
   def intersectWithSegmentAsLineResult seg # seg - seg, self - seg2
-    if real_close(seg.x1, seg.x2)
-      if seg.y1 < self.y1
-        a = seg
-        b = self
-      else
+    if real_close(@x1, @x2)
+      if @y1 < seg.y1
         a = self
         b = seg
+      else
+        a = seg
+        b = self
       end
       if real_close(a.y2, b.y1)
         Point.new(a.x2, a.y2) # just touching
@@ -303,12 +303,12 @@ class LineSegment < GeometryValue
         end
       end
       else # the segments are on a (non-vertical) line
-        if seg.x1 < self.x1
-          a = seg
-          b = self
-        else
+        if @x1 < seg.x1
           a = self
           b = seg
+        else
+          a = seg
+          b = self
         end
         if real_close(a.x2,b.x1)
           Point.new(a.x2, a.y2) # just touching
